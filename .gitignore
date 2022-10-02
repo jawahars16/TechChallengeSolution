@@ -1,0 +1,5 @@
+.envrc
+credentials.*
+github.*
+*.tfstate
+.terraform
