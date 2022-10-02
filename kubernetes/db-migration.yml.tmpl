@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: servian-app
+  name: servian-app-db-migration
   labels:
-    app: servian-app
+    app: servian-app-db-migration
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: servian-app
+      app: servian-app-db-migration
   template:
     metadata:
       labels:
-        app: servian-app
+        app: servian-app-db-migration
     spec:
       containers:
-        - name: servian-app
+        - name: servian-app-db-migration
           image: servian/techchallengeapp:$IMAGE_VERSION
           ports:
             - containerPort: 3000
