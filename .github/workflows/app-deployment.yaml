@@ -48,9 +48,9 @@ jobs:
           input: kubernetes/secrets.yml.tmpl
           output: kubernetes/secrets.yml
         env:
-          DB_HOST: ${{ secrets.DB_HOST_BASE64 }}
-          DB_USER: ${{ secrets.DB_USER_BASE64 }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD_BASE64 }}
+          DB_HOST_BASE64: ${{ secrets.DB_HOST_BASE64 }}
+          DB_USER_BASE64: ${{ secrets.DB_USER_BASE64 }}
+          DB_PASSWORD_BASE64: ${{ secrets.DB_PASSWORD_BASE64 }}
 
       - name: Configure kubectl
         uses: google-github-actions/get-gke-credentials@v0
