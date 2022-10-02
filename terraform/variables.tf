@@ -8,6 +8,18 @@ variable "region" {
   description = "The region to deploy to"
 }
 
+#=========GKE Variables================
+
+variable "gke_machine_type" {
+  type        = string
+  description = "The machine type to use for the GKE nodes"
+}
+
+variable "gke_num_nodes" {
+  type        = number
+  description = "The number of nodes to use for the GKE cluster"
+}
+
 #=========DB Variables================
 
 variable "db_user" {
