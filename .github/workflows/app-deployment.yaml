@@ -67,5 +67,6 @@ jobs:
           kubectl apply -f secrets.yml
           kubectl apply -f configmap.yml
           kubectl apply -f db-migration.yml
+          kubectl rollout status deployment/servian-app-db-migration
           kubectl apply -f app-server.yml
           kubectl apply -f service.yml
