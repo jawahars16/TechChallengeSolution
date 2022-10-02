@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - "kubernetes/**"
+  workflow_dispatch:
 jobs:
   deploy:
     name: "Deploy to k8s"
