@@ -1,0 +1,71 @@
+name: "App Deployment"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "kubernetes/**"
+jobs:
+  deploy:
+    name: "Deploy to k8s"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create file from secrets
+        working-directory: terraform
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" | base64 --decode > credentials.json
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+          export_default_credentials: true
+
+      - name: Render Deployment YAML
+        uses: nowactions/envsubst@v1
+        with:
+          input: kubernetes/db-migration.yml.tmpl
+          output: kubernetes/db-migration.yml
+        env:
+          IMAGE_VERSION: "latest"
+
+      - name: Render App server deployment YAML
+        uses: nowactions/envsubst@v1
+        with:
+          input: kubernetes/app-server.yml.tmpl
+          output: kubernetes/app-server.yml
+        env:
+          IMAGE_VERSION: "latest"
+
+      - name: Render Secrets
+        uses: nowactions/envsubst@v1
+        with:
+          input: kubernetes/secrets.yml.tmpl
+          output: kubernetes/secrets.yml
+        env:
+          DB_HOST: ${{ secrets.DB_HOST_BASE64 }}
+          DB_USER: ${{ secrets.DB_USER_BASE64 }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD_BASE64 }}
+
+      - name: Configure kubectl
+        uses: google-github-actions/get-gke-credentials@v0
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+          location: ${{ secrets.GKE_CLUSTER_LOCATION }}
+          credentials: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - name: Deploy to k8s
+        working-directory: kubernetes
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl apply -f secrets.yml
+          kubectl apply -f configmap.yml
+          kubectl apply -f db-migration.yml
+          kubectl rollout status -w deployment/db-migration
+          kubectl apply -f app-server.yml
+          kubectl apply -f service.yml
