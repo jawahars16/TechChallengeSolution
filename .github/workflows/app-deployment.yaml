@@ -6,6 +6,11 @@ on:
     paths:
       - "kubernetes/**"
   workflow_dispatch:
+    inputs:
+      initialize-db:
+        description: "Initialize DB"
+        required: false
+        default: "false"
 jobs:
   deploy:
     name: "Deploy to k8s"
@@ -66,8 +71,10 @@ jobs:
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
           kubectl apply -f secrets.yml
           kubectl apply -f configmap.yml
-          kubectl apply -f db-migration.yml
-          kubectl rollout status deployment/servian-app-db-migration
           kubectl apply -f app-server.yml
           kubectl apply -f service.yml
           kubectl apply -f hpa.yml
+
+      - name: DB Initialize
+        if: github.event.inputs.initialize-db == 'true'
+        run: kubectl apply -f db-migration.yml
