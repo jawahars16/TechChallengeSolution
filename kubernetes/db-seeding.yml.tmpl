@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: servian-app-db-seeding
+spec:
+  template:
+    metadata:
+      name: servian-app-db-seeding
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: servian-app-db-seeding
+          image: servian/techchallengeapp:$IMAGE_VERSION
+          command: ["./TechChallengeApp", "updatedb", "-s"]
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: servian-app-config
+            - secretRef:
+                name: servian-app-secrets

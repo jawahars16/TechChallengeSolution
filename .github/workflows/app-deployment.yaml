@@ -15,6 +15,9 @@ jobs:
   deploy:
     name: "Deploy to k8s"
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
+      IMAGE_VERSION: "latest"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -31,21 +34,17 @@ jobs:
           service_account_key: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
           export_default_credentials: true
 
-      - name: Render Deployment YAML
+      - name: Render DB seeding YAML
         uses: nowactions/envsubst@v1
         with:
-          input: kubernetes/db-migration.yml.tmpl
-          output: kubernetes/db-migration.yml
-        env:
-          IMAGE_VERSION: "latest"
+          input: kubernetes/db-seeding.yml.tmpl
+          output: kubernetes/db-seeding.yml
 
       - name: Render App server deployment YAML
         uses: nowactions/envsubst@v1
         with:
           input: kubernetes/app-server.yml.tmpl
           output: kubernetes/app-server.yml
-        env:
-          IMAGE_VERSION: "latest"
 
       - name: Render Secrets
         uses: nowactions/envsubst@v1
@@ -76,5 +75,9 @@ jobs:
           kubectl apply -f hpa.yml
 
       - name: DB Initialize
+        working-directory: kubernetes
         if: github.event.inputs.initialize-db == 'true'
-        run: kubectl apply -f db-migration.yml
+        run: |
+          kubectl apply -f db-seeding.yml
+          kubectl wait --for=condition=complete --timeout=30s job.batch/servian-app-db-seeding
+          kubectl delete job servian-app-db-seeding
