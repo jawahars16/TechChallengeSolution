@@ -22,3 +22,8 @@ variable "db_password" {
   type        = string
   description = "The database password"
 }
+
+variable "db_name" {
+  type        = string
+  description = "The database name"
+}

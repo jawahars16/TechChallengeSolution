@@ -32,6 +32,11 @@ resource "google_sql_database_instance" "postgres" {
   deletion_protection = false
 }
 
+resource "google_sql_database" "database" {
+  name     = var.db_name
+  instance = google_sql_database_instance.postgres.name
+}
+
 resource "google_sql_user" "default" {
   project  = var.project_id
   name     = var.db_user
