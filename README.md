@@ -38,13 +38,13 @@ Infrastructure provisioning and application deployment is automated using Github
 
 > **Note**: User need `admin` access to the repository to setup the secrets. Or user can clone the repository and provide below secrets to run the github workflow.
 
-Following secrets are pre-requisite for `infra-provisioning` workflow,
+### Secrets for `infra-provisioning` workflow,
 
 * `GOOGLE_APPLICATION_CREDENTIALS` - GCP Service Account credentials in base64 format.
 * `DB_USER` - Cloud SQL DB user. Terraform use this while creating the SQL instance.
 * `DB_PASSWORD` - Decide a strong password for the database. Terraform use this while creating the SQL instance.
 
-Following secrets are pre-requisite for `app-deployment` workflow to run successfully.
+### Secrets for `app-deployment` workflow to run successfully.
 
 * `GCP_PROJECT_ID` - GCP Project ID.
 * `DB_HOST_BASE64` - Database Host in base64 format.
@@ -54,3 +54,14 @@ Following secrets are pre-requisite for `app-deployment` workflow to run success
 * `GKE_CLUSTER_LOCATION` - GKE cluster location. (eg: us-central1)
 
 Github workflows automatically run whenever there is a change in corresponding folder. For example, `infra-provisioning` workflow runs whenever there is a change in `terraform` folder. And `app-deployment` workflow runs whenever there is a change in `kubernetes` folder. Manual trigger can be done by clicking on the `Run workflow` button in the Actions tab.
+
+### Steps to deploy and run the application,
+
+* Update `Infra Provisioning` workflow with the required secrets.
+* Trigger `Infra Provisioning` workflow.
+* Validate the terraform plan.
+* Trigger `Infra Provisioning` workflow again with `terraform_apply` flag ON to apply the changes.
+* Update `App Deployment` workflow with the required secrets.
+* Trigger `App Deployment` workflow with `initialize-db` flag ON to seed the data.
+* Application's external IP address can be found in the `App Deployment` workflow logs.
+* Access the external IP address in the browser to access the application.
