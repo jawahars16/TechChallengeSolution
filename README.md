@@ -1,5 +1,8 @@
 # Servian Tech Challenge Solution
 
+[![Infra Provisioning](https://github.com/jawahars16/TechChallengeSolution/actions/workflows/infra-provisioning.yaml/badge.svg)](https://github.com/jawahars16/TechChallengeSolution/actions/workflows/infra-provisioning.yaml)
+[![App Deployment](https://github.com/jawahars16/TechChallengeSolution/actions/workflows/app-deployment.yaml/badge.svg)](https://github.com/jawahars16/TechChallengeSolution/actions/workflows/app-deployment.yaml)
+
 The given Golang application has been deployed to Google Cloud Platform. The application is deployed as a containerised application using Google Kubernetes Engine. The application is deployed in a GKE cluster with a single node per zone. The application is exposed to the internet using a load balancer.
 
 ## Pre-requisites
