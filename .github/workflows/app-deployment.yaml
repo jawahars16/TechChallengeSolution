@@ -73,11 +73,17 @@ jobs:
           kubectl apply -f app-server.yml
           kubectl apply -f service.yml
           kubectl apply -f hpa.yml
+          echo "*********************************************************"
+          echo "*********************************************************"
+          echo "Enter below endpoint in browser to access the application"
+          echo $(kubectl get svc | grep servian-app | awk '{print $4}')
+          echo "*********************************************************"
+          echo "*********************************************************"
 
       - name: DB Initialize
         working-directory: kubernetes
         if: github.event.inputs.initialize-db == 'true'
         run: |
           kubectl apply -f db-seeding.yml
-          kubectl wait --for=condition=complete --timeout=30s job.batch/servian-app-db-seeding
+          kubectl wait --for=condition=complete --timeout=30s job.batch/servian-app-db-seeding || true
           kubectl delete job servian-app-db-seeding
