@@ -31,3 +31,4 @@ jobs:
         release_name: Release ${{ steps.create_tag.outputs.tag }}
         draft: false
         prerelease: false
+
